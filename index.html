@@ -1,9 +1,1189 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8" />
-  <title>Hello World</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTRL+S our souls - SIGMOD 2025</title>
+    
+    <!-- Favicon (Database Icon) -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='12' cy='5' rx='9' ry='3'%3E%3C/ellipse%3E%3Cpath d='M21 12c0 1.66-4 3-9 3s-9-1.34-9-3'%3E%3C/path%3E%3Cpath d='M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5'%3E%3C/path%3E%3C/svg%3E">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Markdown Parser for AI Responses -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom Scrollbar for Sidebar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Active Link Styling */
+        .nav-link.active {
+            color: #2563eb; /* blue-600 */
+            border-left: 3px solid #2563eb;
+            background-color: #eff6ff; /* blue-50 */
+            font-weight: 600;
+        }
+
+        /* Keyboard Key Style for Logo */
+        .kbd-key {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.15rem 0.4rem;
+            font-family: monospace;
+            font-weight: 700;
+            line-height: 1;
+            border-radius: 0.375rem;
+            border-bottom-width: 2px;
+            transition: all 0.1s;
+        }
+        
+        /* Light Theme Key (Default) */
+        .kbd-light {
+            background-color: #f8fafc;
+            border-color: #cbd5e1;
+            color: #334155;
+            border-width: 1px 1px 3px 1px;
+        }
+
+        /* Dark Theme Key (For dark backgrounds) */
+        .kbd-dark {
+            background-color: #334155;
+            border-color: #1e293b;
+            color: #f8fafc;
+            border-width: 1px 1px 3px 1px;
+        }
+
+        /* Chat Widget Animations */
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .chat-slide-in {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pop-in {
+            animation: popIn 0.3s ease-out forwards;
+        }
+        
+        /* Typing Indicator */
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Markdown Styles inside Chat */
+        .prose-sm p { margin-bottom: 0.5em; }
+        .prose-sm pre { background: #1e293b; color: #e2e8f0; padding: 0.5rem; border-radius: 0.25rem; overflow-x: auto; }
+        .prose-sm code { background: #f1f5f9; padding: 0.1rem 0.3rem; border-radius: 0.2rem; font-size: 0.9em; color: #d63384; }
+        .prose-sm pre code { background: transparent; color: inherit; }
+    </style>
 </head>
-<body>
-  <h1>It works!</h1>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Mobile Header -->
+    <div class="lg:hidden fixed top-0 left-0 w-full bg-slate-900 text-white z-50 px-4 py-3 flex justify-between items-center shadow-md">
+        <div class="font-bold text-lg flex items-center gap-2">
+            <span class="kbd-key kbd-dark text-xs">CTRL</span>
+            <span class="text-slate-400 text-xs">+</span>
+            <span class="kbd-key kbd-dark text-xs">S</span>
+            <span class="ml-1">our souls</span>
+        </div>
+        <button id="mobile-menu-btn" class="text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white border-r border-slate-200 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40 overflow-y-auto custom-scrollbar pt-16 lg:pt-0 pb-10">
+        <div class="p-6 border-b border-slate-100 hidden lg:block">
+            <h1 class="text-xl font-bold text-slate-900 flex items-center flex-wrap gap-1">
+                <span class="kbd-key kbd-light text-sm shadow-sm">CTRL</span>
+                <span class="text-slate-400 text-sm font-light">+</span>
+                <span class="kbd-key kbd-light text-sm shadow-sm">S</span>
+                <span class="ml-1">our souls</span>
+            </h1>
+            <p class="text-xs text-slate-500 mt-2 uppercase tracking-wide flex items-center gap-2">
+                <i class="fa-solid fa-database text-blue-500"></i> SIGMOD 2025
+            </p>
+        </div>
+
+        <nav class="p-4 space-y-1">
+            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 mt-2">Main</p>
+            <a href="#" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">Home</a>
+            <a href="task_description.html" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">Task Description</a>
+            
+            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 mt-6">Optimizations</p>
+            <div class="space-y-1">
+                <a href="optimization1.html" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">1. Robinhood HT</a>
+                <a href="optimization2.html" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">2. Cuckoo HT</a>
+                <a href="optimization3.html" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">3. Hopscotch HT</a>
+                <a href="optimization4.html" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">4. Late Materialization</a>
+                <a href="optimization5.html" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">5. Column Store</a>
+                <a href="optimization6.html" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">6. No Root IR</a>
+                <a href="optimization7.html" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">7. Unchained Table</a>
+                <a href="optimization8.html" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">8. Indexing</a>
+                <a href="optimization9.html" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">9. Building Parallel.</a>
+                <a href="optimization10.html" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">10. Probing Parallel.</a>
+                <a href="optimization11.html" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">11. Work Stealing</a>
+            </div>
+
+            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 mt-6">Analysis</p>
+            <a href="#results" class="nav-link block px-3 py-2 text-sm text-slate-600 rounded-r-md hover:bg-slate-50 border-l-3 border-transparent transition-colors">Performance Results</a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content -->
+    <main class="lg:ml-64 min-h-screen flex flex-col">
+        
+        <!-- Hero Section -->
+        <div class="relative bg-slate-900 text-white py-20 px-8 lg:px-12 overflow-hidden">
+            <!-- Abstract Background graphic -->
+            <div class="absolute inset-0 opacity-20">
+                <svg class="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M0 100 C 20 0 50 0 100 100 Z" fill="#3b82f6" />
+                </svg>
+            </div>
+            
+            <div class="relative z-10 max-w-4xl">
+                <div class="flex items-center gap-3 mb-6">
+                    <!-- Logo in Hero -->
+                    <div class="inline-flex items-center gap-2 bg-white/10 p-2 px-3 rounded-lg backdrop-blur-sm border border-white/10">
+                        <span class="kbd-key kbd-dark text-sm border-white/20">CTRL</span>
+                        <span class="text-slate-300 text-sm">+</span>
+                        <span class="kbd-key kbd-dark text-sm border-white/20">S</span>
+                        <span class="text-blue-300 font-medium tracking-wide ml-1">our souls</span>
+                    </div>
+                </div>
+                
+                <h1 class="text-4xl lg:text-5xl font-bold tracking-tight mb-4">Optimizing Hash Joins</h1>
+                <p class="text-slate-300 text-lg max-w-2xl leading-relaxed">
+                    Official documentation for the SIGMOD 2025 Programming Contest entry. A deep dive into high-performance computing techniques for main-memory database operations.
+                </p>
+            </div>
+        </div>
+
+        <div class="flex-grow px-8 lg:px-12 py-12 max-w-6xl mx-auto w-full">
+            
+            <!-- Introduction & Team -->
+            <section id="intro" class="scroll-mt-24 mb-16">
+                <div class="border-b border-slate-200 pb-4 mb-8">
+                    <h2 class="text-3xl font-bold text-slate-900">The Team</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Member 1 -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-full overflow-hidden border border-slate-200">
+                                <img src="https://avatars.githubusercontent.com/u/60440928?v=4" alt="Andreakis Dimitrios" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900">Andreakis Dimitrios</h3>
+                                <p class="text-sm text-slate-500">EncodedMind</p>
+                            </div>
+                        </div>
+                        <a href="https://github.com/EncodedMind" target="_blank" class="flex items-center justify-center gap-2 w-full py-2 bg-slate-50 text-slate-700 hover:bg-slate-900 hover:text-white rounded-lg text-sm font-medium transition-all">
+                            <i class="fa-brands fa-github"></i> View Profile
+                        </a>
+                    </div>
+
+                    <!-- Member 2 -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-full overflow-hidden border border-slate-200">
+                                <img src="https://avatars.githubusercontent.com/u/61846821?v=4" alt="Vasileiou Evaggelos" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900">Vasileiou Evaggelos</h3>
+                                <p class="text-sm text-slate-500">VangelisVas</p>
+                            </div>
+                        </div>
+                        <a href="https://github.com/VangelisVas" target="_blank" class="flex items-center justify-center gap-2 w-full py-2 bg-slate-50 text-slate-700 hover:bg-slate-900 hover:text-white rounded-lg text-sm font-medium transition-all">
+                            <i class="fa-brands fa-github"></i> View Profile
+                        </a>
+                    </div>
+
+                    <!-- Member 3 -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow group">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 rounded-full overflow-hidden border border-slate-200">
+                                <img src="https://avatars.githubusercontent.com/u/76202671?v=4" alt="Kolokouras Apostolos" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900">Kolokouras Apostolos</h3>
+                                <p class="text-sm text-slate-500">TolisKlk</p>
+                            </div>
+                        </div>
+                        <a href="https://github.com/TolisKlk" target="_blank" class="flex items-center justify-center gap-2 w-full py-2 bg-slate-50 text-slate-700 hover:bg-slate-900 hover:text-white rounded-lg text-sm font-medium transition-all">
+                            <i class="fa-brands fa-github"></i> View Profile
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Restored Problem Statement Section -->
+            <section id="problem" class="scroll-mt-24 mb-16">
+                <div class="flex justify-between items-end border-b border-slate-200 pb-4 mb-6">
+                    <h2 class="text-3xl font-bold text-slate-900">The Problem</h2>
+                    <!-- Gemini Feature 1: Explain Simply -->
+                    <button onclick="explainProblemWithAI()" class="text-sm bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-full hover:shadow-lg hover:from-purple-700 hover:to-indigo-700 transition-all flex items-center gap-2 transform hover:scale-105 active:scale-95">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Explain with AI
+                    </button>
+                </div>
+                
+                <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed relative">
+                    <div id="problem-text">
+                        <p class="mb-6 text-lg">
+                            The <strong>SIGMOD 2025 Programming Contest</strong> task is to implement a high-performance <strong>Hash Join</strong> algorithm.
+                        </p>
+                        <p class="mb-6">
+                           The contest provides a baseline implementation of a Hash Join. The primary goal is to optimize this code to minimize the total execution time of the algorithm. Participants are free to use any optimization techniques available, including parallelization, vectorization, and cache-conscious algorithms.
+                        </p>
+                        
+                        <!-- Base Code Link Card -->
+                        <div class="flex items-start gap-4 p-4 bg-slate-100 rounded-lg border border-slate-200 hover:border-blue-300 transition-colors">
+                             <div class="p-2 bg-white rounded-md border border-slate-200 text-slate-700">
+                                <i class="fa-solid fa-code-branch text-xl"></i>
+                             </div>
+                             <div>
+                                 <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wide">Base Implementation</h4>
+                                 <p class="text-sm text-slate-600 mb-2">The starting point for our optimizations.</p>
+                                 <a href="https://github.com/SIGMOD-25-Programming-Contest/base" target="_blank" class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium hover:underline">
+                                    <i class="fa-brands fa-github"></i>
+                                    SIGMOD-25-Programming-Contest/base
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                                </a>
+                             </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Result Container (Hidden by default) -->
+                    <div id="ai-explanation" class="hidden my-6 bg-purple-50 p-6 rounded-xl border border-purple-100 shadow-inner">
+                        <h5 class="text-purple-900 font-bold mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-robot"></i> Simplified Explanation
+                        </h5>
+                        <div id="ai-explanation-content" class="text-purple-800 text-md">
+                            <!-- Gemini content goes here -->
+                        </div>
+                        <button onclick="closeExplanation()" class="text-xs text-purple-600 underline mt-3 hover:text-purple-800">Close</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results" class="scroll-mt-24 mb-16">
+                <div class="border-b border-slate-200 pb-4 mb-8">
+                    <h2 class="text-3xl font-bold text-slate-900">Performance Results</h2>
+                    <p class="text-slate-500 mt-2">Comparison of average execution time across all optimization stages.</p>
+                </div>
+
+                <!-- Optimization Evolution Chart (Bar) -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-8">
+                    <h4 class="font-bold text-slate-800 mb-2 text-center">Optimization Evolution</h4>
+                    <p class="text-xs text-slate-400 text-center mb-6">Lower is better. Y-Axis: Execution Time (ms)</p>
+                    <div class="relative w-full" style="height: 400px;">
+                        <canvas id="evolutionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Detailed Statistics Table -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-8">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                        <h4 class="font-bold text-slate-800">Average Runtimes & Improvements</h4>
+                        <span class="text-xs font-mono text-slate-400">5 runs averaged</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-slate-600">
+                            <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">Optimization</th>
+                                    <th scope="col" class="px-6 py-3 text-right">Avg Time (ms)</th>
+                                    <th scope="col" class="px-6 py-3 text-right">vs Previous</th>
+                                    <th scope="col" class="px-6 py-3 text-right">vs Base</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <!-- Base -->
+                                <tr class="bg-slate-50/50">
+                                    <td class="px-6 py-3 font-medium text-slate-900">0. Base (Unordered Map)</td>
+                                    <td class="px-6 py-3 text-right font-mono">160,048</td>
+                                    <td class="px-6 py-3 text-right text-slate-400">-</td>
+                                    <td class="px-6 py-3 text-right text-slate-400">-</td>
+                                </tr>
+                                <!-- Opt 1 -->
+                                <tr class="bg-white hover:bg-slate-50">
+                                    <td class="px-6 py-3 font-medium text-slate-900">1. Robinhood HT</td>
+                                    <td class="px-6 py-3 text-right font-mono">183,942</td>
+                                    <td class="px-6 py-3 text-right text-red-500 font-medium">+14.93%</td>
+                                    <td class="px-6 py-3 text-right text-red-500">+14.93%</td>
+                                </tr>
+                                <!-- Opt 2 -->
+                                <tr class="bg-white hover:bg-slate-50">
+                                    <td class="px-6 py-3 font-medium text-slate-900">2. Cuckoo HT</td>
+                                    <td class="px-6 py-3 text-right font-mono">178,869</td>
+                                    <td class="px-6 py-3 text-right text-red-500 font-medium">+11.76%</td>
+                                    <td class="px-6 py-3 text-right text-red-500">+11.76%</td>
+                                </tr>
+                                <!-- Opt 3 -->
+                                <tr class="bg-white hover:bg-slate-50">
+                                    <td class="px-6 py-3 font-medium text-slate-900">3. Hopscotch HT</td>
+                                    <td class="px-6 py-3 text-right font-mono">173,872</td>
+                                    <td class="px-6 py-3 text-right text-red-500 font-medium">+8.64%</td>
+                                    <td class="px-6 py-3 text-right text-red-500">+8.64%</td>
+                                </tr>
+                                <!-- Opt 4 (Table styling reverted to normal) -->
+                                <tr class="bg-white hover:bg-slate-50">
+                                    <td class="px-6 py-3 font-medium text-slate-900">4. Late Materialization</td>
+                                    <td class="px-6 py-3 text-right font-mono">105,546</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600 font-medium">-34.05% <span class="text-xs font-normal text-slate-400">(vs Base)</span></td>
+                                    <td class="px-6 py-3 text-right text-emerald-600">-34.05%</td>
+                                </tr>
+                                <!-- Opt 5 -->
+                                <tr class="bg-white hover:bg-slate-50">
+                                    <td class="px-6 py-3 font-medium text-slate-900">5. Column Store</td>
+                                    <td class="px-6 py-3 text-right font-mono">62,144</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600 font-medium">-41.12%</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600">-61.17%</td>
+                                </tr>
+                                <!-- Opt 6 -->
+                                <tr class="bg-white hover:bg-slate-50">
+                                    <td class="px-6 py-3 font-medium text-slate-900">6. No Root IR</td>
+                                    <td class="px-6 py-3 text-right font-mono">58,901</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600 font-medium">-5.22%</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600">-63.20%</td>
+                                </tr>
+                                <!-- Opt 7 -->
+                                <tr class="bg-white hover:bg-slate-50">
+                                    <td class="px-6 py-3 font-medium text-slate-900">7. Unchained Table</td>
+                                    <td class="px-6 py-3 text-right font-mono">43,311</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600 font-medium">-26.47%</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600">-72.94%</td>
+                                </tr>
+                                <!-- Opt 8 -->
+                                <tr class="bg-white hover:bg-slate-50">
+                                    <td class="px-6 py-3 font-medium text-slate-900">8. Indexing</td>
+                                    <td class="px-6 py-3 text-right font-mono">13,017</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600 font-medium">-69.95%</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600">-91.87%</td>
+                                </tr>
+                                <!-- Opt 9 -->
+                                <tr class="bg-white hover:bg-slate-50">
+                                    <td class="px-6 py-3 font-medium text-slate-900">9. Building Parallelization</td>
+                                    <td class="px-6 py-3 text-right font-mono">12,919</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600 font-medium">-0.75%</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600">-91.93%</td>
+                                </tr>
+                                <!-- Opt 10 -->
+                                <tr class="bg-white hover:bg-slate-50">
+                                    <td class="px-6 py-3 font-medium text-slate-900">10. Probing Parallelization</td>
+                                    <td class="px-6 py-3 text-right font-mono">7,798</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600 font-medium">-39.64%</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600">-95.13%</td>
+                                </tr>
+                                <!-- Opt 11 (Highlighted) -->
+                                <tr class="bg-slate-100 hover:bg-slate-200 border-l-4 border-slate-600 transition-colors">
+                                    <td class="px-6 py-3 font-bold text-slate-900">11. Work Stealing (Final)</td>
+                                    <td class="px-6 py-3 text-right font-mono font-bold text-blue-700">6,208</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600 font-bold">-20.39%</td>
+                                    <td class="px-6 py-3 text-right text-emerald-600 font-bold">-96.12%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Execution Breakdown Pie Chart (Final) -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h4 class="font-bold text-slate-800 mb-2 text-center">Final Execution Breakdown (Fastest)</h4>
+                    <p class="text-xs text-slate-400 text-center mb-6">Optimization 11: Work Stealing</p>
+                    <div class="relative w-full" style="height: 400px;">
+                        <canvas id="breakdownChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-slate-900 text-slate-400 py-12 mt-auto border-t border-slate-800">
+            <div class="max-w-6xl mx-auto px-8 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-center md:text-left">
+                    <h3 class="text-white font-bold text-lg flex items-center gap-2 justify-center md:justify-start">
+                        <span class="kbd-key kbd-dark text-xs border-white/20">CTRL</span>
+                        <span class="text-slate-500 text-xs">+</span>
+                        <span class="kbd-key kbd-dark text-xs border-white/20">S</span>
+                        <span class="ml-1">our souls</span>
+                    </h3>
+                    <p class="text-sm mt-2 text-slate-500">SIGMOD 2025 Competition</p>
+                    <p class="text-xs mt-1 text-slate-600">Made by Dimitris Andreakis</p>
+                </div>
+                
+                <div>
+                     <a href="https://github.com/uoa-k23a/k23a-2025-d1-ctrl-s-our-souls" target="_blank" class="inline-flex items-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all font-medium shadow-lg hover:shadow-blue-500/25 group">
+                        <i class="fa-brands fa-github text-xl group-hover:scale-110 transition-transform"></i>
+                        <span>Access Project Repository</span>
+                    </a>
+                    <p class="text-xs text-center mt-2 text-slate-600">(Private Access)</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Gemini Feature 2: Optimization Assistant Chatbot Widget -->
+    <div id="ai-chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        
+        <!-- Helper Bubble -->
+        <div id="chat-helper-bubble" class="mb-2 mr-1 bg-white px-3 py-2 rounded-xl rounded-br-none shadow-lg border border-slate-100 transform origin-bottom-right pop-in flex items-center gap-2 max-w-xs">
+            <span class="text-sm text-slate-700">Need help understanding our code? 🤖</span>
+            <button onclick="document.getElementById('chat-helper-bubble').remove()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xs"></i></button>
+        </div>
+
+        <!-- Chat Window -->
+        <div id="chat-window" class="hidden bg-white w-80 md:w-96 rounded-2xl shadow-2xl border border-slate-200 mb-4 overflow-hidden flex flex-col transition-all duration-300 ease-in-out chat-slide-in" style="height: 500px;">
+            <!-- Chat Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-4 flex justify-between items-center text-white">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                        <i class="fa-solid fa-robot text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm">Repo Assistant</h3>
+                        <!-- Status Indicator -->
+                        <div class="flex items-center gap-1 mt-0.5">
+                            <span id="repo-status-dot" class="w-2 h-2 rounded-full bg-red-400"></span>
+                            <p id="repo-status-text" class="text-[10px] text-blue-100">Data Offline</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="toggleChat()" class="text-white/80 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <!-- Chat Messages -->
+            <div id="chat-messages" class="flex-grow overflow-y-auto p-4 bg-slate-50 space-y-4">
+                <!-- Welcome Message -->
+                <div class="flex gap-3">
+                    <div class="w-8 h-8 rounded-full bg-indigo-100 flex-shrink-0 flex items-center justify-center text-indigo-600 text-sm border border-indigo-200">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-sm text-slate-700">
+                        Hello! I am ready to analyze the <code>ctrl-s-our-souls</code> repository. Once the data loads, ask me how specific features like "Indexing" or "Late Materialization" were implemented, and I'll explain using the actual code!
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Area -->
+            <div class="p-3 bg-white border-t border-slate-100">
+                <div class="flex gap-2">
+                    <input type="text" id="chat-input" placeholder="How did you implement..." class="flex-grow px-4 py-2 bg-slate-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 border border-transparent" onkeypress="handleKeyPress(event)">
+                    <button onclick="sendChatMessage()" class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors">
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button onclick="toggleChat()" class="group flex items-center justify-center w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full shadow-lg hover:shadow-blue-500/40 hover:scale-105 transition-all duration-300 relative">
+            <i class="fa-solid fa-message text-xl group-hover:hidden"></i>
+            <i class="fa-solid fa-chevron-up text-xl hidden group-hover:block"></i>
+            <!-- Notification Dot -->
+            <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
+        </button>
+    </div>
+
+    <script>
+        // API Key Setup
+        const apiKey = "AIzaSyDWF6Lh7HxJVY6165HVBHAOGO-B6nt238A";
+
+        // Toggle whether to read repo_history.json as a fallback. Folder snapshots cover everything now.
+        const USE_REPO_HISTORY_FALLBACK = false;
+
+        // Generic filenames to try inside an optimization folder if knowledge-base has no hints
+        const DEFAULT_FOLDER_FILES = [
+            'execute.cpp','execute_root.h','threaded_table.cpp','threaded_table.h',
+            'unchained_table.h','unchained_table.cpp','value_t.h','mycopyscan.h','mytocolumnar.h',
+            'column_t.h','statement.cpp','table.h','execute_rob.cpp','execute_cuc.cpp','execute_hop.cpp',
+            'robinhood.h','cuckoo.h','hopscotch.h'
+        ];
+
+        // Repo Data Storage
+        let repoData = null;
+        let knowledgeBase = null;
+
+        // --- Data for Charts ---
+        const fastestExecutionData = [
+            { label: 'Query 1a', value: 30 }, { label: 'Query 1b', value: 27 }, { label: 'Query 1c', value: 8 }, { label: 'Query 1d', value: 26 },
+            { label: 'Query 2a', value: 36 }, { label: 'Query 2b', value: 32 }, { label: 'Query 2c', value: 30 }, { label: 'Query 2d', value: 41 },
+            { label: 'Query 3a', value: 15 }, { label: 'Query 3b', value: 7 }, { label: 'Query 3c', value: 21 },
+            { label: 'Query 4a', value: 23 }, { label: 'Query 4b', value: 8 }, { label: 'Query 4c', value: 32 },
+            { label: 'Query 5a', value: 11 }, { label: 'Query 5b', value: 5 }, { label: 'Query 5c', value: 17 },
+            { label: 'Query 6a', value: 28 }, { label: 'Query 6b', value: 26 }, { label: 'Query 6c', value: 24 }, { label: 'Query 6d', value: 34 }, { label: 'Query 6e', value: 33 }, { label: 'Query 6f', value: 150 },
+            { label: 'Query 7a', value: 136 }, { label: 'Query 7b', value: 45 }, { label: 'Query 7c', value: 65 },
+            { label: 'Query 8a', value: 20 }, { label: 'Query 8b', value: 9 }, { label: 'Query 8c', value: 246 }, { label: 'Query 8d', value: 153 },
+            { label: 'Query 9a', value: 47 }, { label: 'Query 9b', value: 26 }, { label: 'Query 9c', value: 50 }, { label: 'Query 9d', value: 93 },
+            { label: 'Query 10a', value: 26 }, { label: 'Query 10b', value: 25 }, { label: 'Query 10c', value: 75 },
+            { label: 'Query 11a', value: 19 }, { label: 'Query 11b', value: 9 }, { label: 'Query 11c', value: 26 }, { label: 'Query 11d', value: 28 },
+            { label: 'Query 12a', value: 15 }, { label: 'Query 12b', value: 113 }, { label: 'Query 12c', value: 20 },
+            { label: 'Query 13a', value: 165 }, { label: 'Query 13b', value: 47 }, { label: 'Query 13c', value: 44 }, { label: 'Query 13d', value: 263 },
+            { label: 'Query 14a', value: 27 }, { label: 'Query 14b', value: 13 }, { label: 'Query 14c', value: 31 },
+            { label: 'Query 15a', value: 15 }, { label: 'Query 15b', value: 11 }, { label: 'Query 15c', value: 18 }, { label: 'Query 15d', value: 21 },
+            { label: 'Query 16a', value: 58 }, { label: 'Query 16b', value: 228 }, { label: 'Query 16c', value: 74 }, { label: 'Query 16d', value: 57 },
+            { label: 'Query 17a', value: 104 }, { label: 'Query 17b', value: 40 }, { label: 'Query 17c', value: 33 }, { label: 'Query 17d', value: 33 }, { label: 'Query 17e', value: 129 }, { label: 'Query 17f', value: 99 },
+            { label: 'Query 18a', value: 90 }, { label: 'Query 18b', value: 12 }, { label: 'Query 18c', value: 40 },
+            { label: 'Query 19a', value: 24 }, { label: 'Query 19b', value: 14 }, { label: 'Query 19c', value: 27 }, { label: 'Query 19d', value: 165 },
+            { label: 'Query 20a', value: 289 }, { label: 'Query 20b', value: 220 }, { label: 'Query 20c', value: 154 },
+            { label: 'Query 21a', value: 18 }, { label: 'Query 21b', value: 20 }, { label: 'Query 21c', value: 23 },
+            { label: 'Query 22a', value: 31 }, { label: 'Query 22b', value: 31 }, { label: 'Query 22c', value: 40 }, { label: 'Query 22d', value: 40 },
+            { label: 'Query 23a', value: 19 }, { label: 'Query 23b', value: 18 }, { label: 'Query 23c', value: 18 },
+            { label: 'Query 24a', value: 49 }, { label: 'Query 24b', value: 28 },
+            { label: 'Query 25a', value: 38 }, { label: 'Query 25b', value: 28 }, { label: 'Query 25c', value: 47 },
+            { label: 'Query 26a', value: 170 }, { label: 'Query 26b', value: 146 }, { label: 'Query 26c', value: 205 },
+            { label: 'Query 27a', value: 18 }, { label: 'Query 27b', value: 13 }, { label: 'Query 27c', value: 19 },
+            { label: 'Query 28a', value: 35 }, { label: 'Query 28b', value: 20 }, { label: 'Query 28c', value: 29 },
+            { label: 'Query 29a', value: 26 }, { label: 'Query 29b', value: 26 }, { label: 'Query 29c', value: 61 },
+            { label: 'Query 30a', value: 34 }, { label: 'Query 30b', value: 24 }, { label: 'Query 30c', value: 46 },
+            { label: 'Query 31a', value: 44 }, { label: 'Query 31b', value: 32 }, { label: 'Query 31c', value: 58 },
+            { label: 'Query 32a', value: 25 }, { label: 'Query 32b', value: 27 },
+            { label: 'Query 33a', value: 39 }, { label: 'Query 33b', value: 33 }, { label: 'Query 33c', value: 57 }
+        ].sort((a, b) => b.value - a.value); 
+
+        const totalExecutionTime = 6090;
+        
+        // --- Evolution Data ---
+        const evolutionLabels = [
+            'Base', 'Robinhood', 'Cuckoo', 'Hopscotch', 
+            'Late Mat.', 'Col Store', 'No Root IR', 'Unchained', 
+            'Indexing', 'Build Para', 'Probe Para', 'Work Steal'
+        ];
+        const evolutionData = [
+            160048, 183942, 178869, 173872,
+            105546, 62144, 58901, 43311,
+            13017, 12919, 7798, 6208
+        ];
+
+        // --- Common UI Logic ---
+        const btn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMenu() {
+            const isClosed = sidebar.classList.contains('-translate-x-full');
+            if (isClosed) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        btn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        // ScrollSpy
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '-20% 0px -70% 0px', 
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            link.classList.remove('bg-blue-50');
+                            link.classList.remove('text-blue-600');
+                            link.classList.remove('border-blue-600');
+                            link.classList.add('border-transparent');
+                        });
+                        const id = entry.target.getAttribute('id');
+                        const activeLink = document.querySelector(`.nav-link[href="#${id}"]`);
+                        if (activeLink) {
+                            activeLink.classList.add('active');
+                            activeLink.classList.remove('border-transparent');
+                        }
+                    }
+                });
+            }, observerOptions);
+            sections.forEach(section => { observer.observe(section); });
+
+            // Initialize Charts
+            initBreakdownChart();
+            initEvolutionChart();
+
+            // Load Repo Data
+            fetchRepoData();
+        });
+
+        // --- Fetch Repo Data + Knowledge Base ---
+        async function fetchRepoData() {
+            try {
+                const [repoResponse, kbResponse] = await Promise.all([
+                    fetch('repo_history.json'),
+                    fetch('knowledge-base.json')
+                ]);
+
+                if (!repoResponse.ok) {
+                    throw new Error('Failed to load repo history status: ' + repoResponse.status);
+                }
+
+                repoData = await repoResponse.json();
+
+                if (kbResponse.ok) {
+                    knowledgeBase = await kbResponse.json();
+                    console.log("Knowledge base loaded with", knowledgeBase.optimizations?.length || 0, "optimizations");
+                } else {
+                    console.warn('knowledge-base.json missing or not readable');
+                }
+
+                console.log("Repo data loaded:", repoData.length, "branches");
+                
+                // Update UI Status
+                document.getElementById('repo-status-dot').className = "w-2 h-2 rounded-full bg-green-400";
+                document.getElementById('repo-status-text').textContent = "Connected to Repo";
+                document.getElementById('repo-status-text').className = "text-[10px] text-green-100";
+
+            } catch (error) {
+                console.warn("Could not load external repo_history.json (expected in preview environment). Loading fallback data for demonstration.", error);
+                
+                // Fallback data for preview so the chatbot isn't empty
+                repoData = [
+                    {
+                        "branch": "main",
+                        "commits": [
+                            {
+                                "message": "Finished tests for parallel execution",
+                                "diff": `diff --git a/tests/paral_tests.cpp b/tests/paral_tests.cpp
+index 6dd0bb9..e4d8940 100644
+--- a/tests/paral_tests.cpp
++++ b/tests/paral_tests.cpp
+@@ -1,6 +1,20 @@
++// Example Parallel Test Implementation
+    std::vector<std::vector<Data>> data1{
+        {1, "a"s},
+        {2, "b"s},
+        {3, "c"s},
+    };
+    // ... setup tables ...
+    auto* context = Contest::build_context();
+    auto result = Contest::execute(plan, context);`
+                            },
+                            {
+                                 "message": "Implement Late Materialization",
+                                 "diff": `diff --git a/src/join.cpp b/src/join.cpp
+--- a/src/join.cpp
++++ b/src/join.cpp
+@@ -45,7 +45,7 @@
+-    // Old materialization
++    // New Late Materialization Logic
++    // Store <key, row_id> pairs instead of full tuples initially
++    std::vector<std::pair<int32_t, int32_t>> buffer;
++    // Materialize only on match`
+                            }
+                        ]
+                    }
+                ];
+                
+                // Keep red status but maybe add a note in console
+                document.getElementById('repo-status-text').textContent = "Preview Mode (Fake Data)";
+            }
+        }
+
+        // --- Chart Logic ---
+        function getColor(idx) {
+            const palette = [
+                '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f97316', '#84cc16',
+                '#06b6d4', '#d946ef', '#e11d48', '#22c55e', '#eab308', '#a855f7', '#3b82f6', '#64748b', '#78716c', '#0ea5e9',
+                '#1e40af', '#b91c1c', '#047857', '#b45309', '#6d28d9', '#be185d', '#4338ca', '#0f766e', '#c2410c', '#4d7c0f',
+                '#0891b2', '#a21caf', '#be123c', '#15803d', '#a16207', '#7e22ce', '#1d4ed8', '#334155', '#44403c', '#0369a1',
+                '#93c5fd', '#fca5a5', '#6ee7b7', '#fcd34d', '#c4b5fd', '#f9a8d4', '#a5b4fc', '#5eead4', '#fdba74', '#bef264'
+            ];
+            return palette[idx % palette.length];
+        }
+
+        function initBreakdownChart() {
+            const ctx = document.getElementById('breakdownChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: fastestExecutionData.map(d => d.label),
+                    datasets: [{
+                        data: fastestExecutionData.map(d => d.value),
+                        backgroundColor: fastestExecutionData.map((d, idx) => getColor(idx)),
+                        borderColor: 'white',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '55%',
+                    plugins: {
+                        legend: { display: false }, 
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label;
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percent = ((value / total) * 100).toFixed(1);
+                                    return [
+                                        `${label}`,
+                                        `Time: ${value} ms`,
+                                        `Share: ${percent}%`
+                                    ];
+                                }
+                            }
+                        },
+                        centerText: true 
+                    }
+                },
+                plugins: [{
+                    id: 'centerText',
+                    beforeDraw: function(chart) {
+                        const width = chart.width;
+                        const height = chart.height;
+                        const ctx = chart.ctx;
+                        ctx.restore();
+                        
+                        const fontSizeLabel = (height / 20).toFixed(2);
+                        ctx.font = `bold ${fontSizeLabel}px sans-serif`;
+                        ctx.textBaseline = "middle";
+                        ctx.fillStyle = '#64748b'; 
+                        const text = "Total";
+                        const textX = Math.round((width - ctx.measureText(text).width) / 2);
+                        const textY = height / 2 - (height / 15);
+                        ctx.fillText(text, textX, textY);
+
+                        const fontSizeValue = (height / 10).toFixed(2);
+                        ctx.font = `bold ${fontSizeValue}px monospace`;
+                        ctx.fillStyle = '#1e293b'; 
+                        const text2 = `${(totalExecutionTime / 1000).toFixed(2)}s`;
+                        const text2X = Math.round((width - ctx.measureText(text2).width) / 2);
+                        const text2Y = height / 2 + (height / 15);
+                        ctx.fillText(text2, text2X, text2Y);
+
+                        ctx.save();
+                    }
+                }]
+            });
+        }
+
+        function initEvolutionChart() {
+            const ctx = document.getElementById('evolutionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: evolutionLabels,
+                    datasets: [{
+                        label: 'Average Runtime (ms)',
+                        data: evolutionData,
+                        backgroundColor: evolutionData.map((val, idx) => {
+                            if (idx === 0) return '#94a3b8'; // Base
+                            if (idx >= 1 && idx <= 3) return '#fca5a5'; // Slower
+                            if (idx === 11) return '#10b981'; // Final
+                            return '#3b82f6'; // Optimizations
+                        }),
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            title: { display: true, text: 'Time (ms)' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    if (context.dataIndex === 0) return '';
+                                    
+                                    const current = context.parsed.y;
+                                    const base = evolutionData[0];
+                                    const diff = ((current - base) / base) * 100;
+                                    const sign = diff > 0 ? '+' : '';
+                                    return `vs Base: ${sign}${diff.toFixed(1)}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Gemini Feature 1: Explain with AI ---
+        async function explainProblemWithAI() {
+            const container = document.getElementById('ai-explanation');
+            const contentDiv = document.getElementById('ai-explanation-content');
+            
+            // UI State: Loading
+            container.classList.remove('hidden');
+            contentDiv.innerHTML = '<div class="flex items-center gap-2 text-purple-600"><i class="fa-solid fa-circle-notch fa-spin"></i> Simplifying complex concepts...</div>';
+
+            const prompt = `Explain the SIGMOD 2025 Hash Join optimization challenge in clear, accessible language for someone with basic programming knowledge but unfamiliar with database internals. Focus on:
+
+1. What hash joins actually do in databases (matching records from different tables)
+2. Why optimization matters (speed, efficiency, handling large datasets)
+3. What kinds of techniques are involved (parallelization, memory management, CPU optimizations)
+
+Keep it professional and informative (150-200 words). Avoid oversimplified analogies - instead, explain the concepts clearly.
+
+CONTEXT: The SIGMOD 2025 Programming Contest challenges participants to implement a highly optimized Hash Join algorithm. Hash joins combine rows from two tables based on matching values in specified columns. The contest focuses on optimizing execution time through techniques like multi-threading, SIMD instructions (processing multiple data elements simultaneously), cache-conscious algorithms, and efficient memory management.`;
+
+            try {
+                const responseText = await callGemini(prompt);
+                contentDiv.innerHTML = marked.parse(responseText);
+            } catch (error) {
+                contentDiv.innerHTML = `<span class="text-red-500">Error: ${error.message}</span>`;
+            }
+        }
+
+        function closeExplanation() {
+            document.getElementById('ai-explanation').classList.add('hidden');
+        }
+
+
+        // --- Gemini Feature 2: Chatbot ---
+        function toggleChat() {
+            // Remove helper bubble if it exists
+            const bubble = document.getElementById('chat-helper-bubble');
+            if (bubble) bubble.remove();
+
+            const chatWindow = document.getElementById('chat-window');
+            chatWindow.classList.toggle('hidden');
+            if (!chatWindow.classList.contains('hidden')) {
+                document.getElementById('chat-input').focus();
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        // Helper: match optimization from knowledge-base by name/id/alias
+        function matchOptimization(query) {
+            if (!knowledgeBase || !Array.isArray(knowledgeBase.optimizations)) return null;
+            const lower = query.toLowerCase();
+            let best = null;
+            knowledgeBase.optimizations.forEach(opt => {
+                const targets = [opt.name, opt.id, ...(opt.aliases || [])];
+                const hit = targets.some(t => lower.includes(String(t).toLowerCase()));
+                if (hit && !best) best = opt;
+            });
+            return best;
+        }
+
+        // Helper: split a unified diff into per-file chunks
+        function splitDiffIntoFiles(diffText) {
+            if (!diffText) return [];
+            return diffText.split(/(?=^diff --git )/m).filter(Boolean);
+        }
+
+        // Helper: fetch text if path exists
+        async function fetchTextIfExists(path) {
+            try {
+                const res = await fetch(path, { cache: 'no-cache' });
+                if (!res.ok) return null;
+                return await res.text();
+            } catch (err) {
+                return null;
+            }
+        }
+
+        // Helper: candidate folders for an optimization id (supports dash/underscore variants)
+        function optimizationFolderCandidates(optMeta) {
+            if (!optMeta) return [];
+            const parts = [];
+            const pushVariants = (s) => {
+                if (!s) return;
+                parts.push(s, s.replace(/_/g, '-'), s.replace(/-/g, '_'));
+            };
+            pushVariants(optMeta.id);
+            pushVariants(optMeta.name?.toLowerCase().replace(/\s+/g, '-'));
+            (optMeta.aliases || []).forEach(a => pushVariants(String(a).toLowerCase().replace(/\s+/g, '-')));
+            const uniq = new Set(parts.filter(Boolean).map(p => `optimizations/${p}/`));
+            return Array.from(uniq);
+        }
+
+        // Helper: Find Relevant Context from Repo Data with knowledge-base hints
+        async function findRelevantContext(query) {
+            if (!repoData) return "Repository data not loaded.";
+            
+            const cleanQuery = query.replace(/[^\w\s\.]/g, '');
+            const baseKeywords = cleanQuery.toLowerCase().split(' ').filter(w => w.length > 2);
+
+            const optMeta = matchOptimization(query);
+            const optKeywords = optMeta?.keywords || [];
+            let optFileHints = optMeta?.fileHints || optMeta?.keyFiles || [];
+            const branchHint = optMeta?.branchHint;
+            const localFolders = optimizationFolderCandidates(optMeta);
+
+            if (!optFileHints.length) {
+                optFileHints = DEFAULT_FOLDER_FILES;
+            }
+
+            const allKeywords = Array.from(new Set([...baseKeywords, ...optKeywords.map(k => k.toLowerCase())]));
+
+            console.log("Searching keywords:", allKeywords, "opt:", optMeta?.id || "none");
+
+            const relevantSnippets = [];
+
+            // 0. Try local optimization folders (if user provided snapshots)
+            if (localFolders.length) {
+                const hintFiles = Array.from(new Set(optFileHints));
+                for (const folder of localFolders) {
+                    for (const hint of hintFiles) {
+                        const base = hint.split(/[/\\]/).pop();
+                        const candidates = [`${folder}${hint}`, `${folder}${base}`];
+                        for (const candidate of candidates) {
+                            const text = await fetchTextIfExists(candidate);
+                            if (text) {
+                                relevantSnippets.push({
+                                    score: 100, // Prefer explicit folder snapshots
+                                    file: candidate,
+                                    msg: `Snapshot file for ${optMeta.name}`,
+                                    code: text.substring(0, 2000)
+                                });
+                                break; // found this hint in this folder
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 1. If we already found snapshot files, skip repo_history parsing to reduce noise
+            if (relevantSnippets.length === 0 && USE_REPO_HISTORY_FALLBACK) {
+                repoData.forEach(branchObj => {
+                    if (branchHint && branchObj.branch && branchObj.branch.toLowerCase() !== branchHint.toLowerCase()) return;
+
+                    (branchObj.commits || []).forEach(commit => {
+                        const commitMsg = (commit.message || "").toLowerCase();
+                        const fullDiff = commit.diff || "";
+
+                        const fileChunks = splitDiffIntoFiles(fullDiff);
+
+                        fileChunks.forEach(chunk => {
+                            const fileMatch = chunk.match(/^diff --git a\/(.+?) b\/(.+)$/m);
+                            const filePath = fileMatch ? fileMatch[2] : "unknown";
+                            const fileLower = filePath.toLowerCase();
+                            const chunkLower = chunk.toLowerCase();
+
+                            let score = 0;
+
+                            optFileHints.forEach(hint => {
+                                const h = hint.toLowerCase();
+                                if (fileLower.includes(h)) score += 10;
+                                else if (chunkLower.includes(h)) score += 4;
+                            });
+
+                            allKeywords.forEach(word => {
+                                if (!word) return;
+                                if (fileLower.includes(word)) score += 8;
+                                if (commitMsg.includes(word)) score += 5;
+                                if (chunkLower.includes(word)) score += 2;
+                            });
+
+                            if (score >= 5) {
+                                relevantSnippets.push({
+                                    score,
+                                    file: filePath,
+                                    msg: commit.message,
+                                    code: chunk.substring(0, 1400)
+                                });
+                            }
+                        });
+                    });
+                });
+            }
+
+            relevantSnippets.sort((a, b) => b.score - a.score);
+            const topSnippets = relevantSnippets.slice(0, 6);
+
+            if (topSnippets.length === 0) {
+                const hintText = optMeta ? `Looked for ${optFileHints.join(', ') || 'file hints'} and keywords ${allKeywords.join(', ')}` : "";
+                return `No relevant code files found matching your keywords. ${hintText}`;
+            }
+
+            let contextStr = "Here are the specific file changes found:\n\n";
+            if (optMeta) {
+                contextStr += `Optimization focus: ${optMeta.name}\n`;
+                if (optFileHints.length) contextStr += `Priority files: ${optFileHints.join(', ')}\n`;
+                contextStr += "\n";
+            }
+
+            topSnippets.forEach(item => {
+                contextStr += `Commit: ${item.msg}\n`;
+                contextStr += `File: ${item.file}\n`;
+                contextStr += `Diff:\n${item.code}\n...\n\n`;
+            });
+
+            return contextStr;
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const messagesDiv = document.getElementById('chat-messages');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            const userMsgHTML = `
+                <div class="flex gap-3 justify-end">
+                    <div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none shadow-md text-sm max-w-[80%]">
+                        ${message}
+                    </div>
+                </div>`;
+            messagesDiv.insertAdjacentHTML('beforeend', userMsgHTML);
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            const loadingId = 'loading-' + Date.now();
+            const loadingHTML = `
+                <div id="${loadingId}" class="flex gap-3">
+                     <div class="w-8 h-8 rounded-full bg-indigo-100 flex-shrink-0 flex items-center justify-center text-indigo-600 text-sm border border-indigo-200">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-sm text-slate-700 flex items-center gap-1">
+                        <div class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></div>
+                        <div class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></div>
+                        <div class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></div>
+                    </div>
+                </div>`;
+            messagesDiv.insertAdjacentHTML('beforeend', loadingHTML);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            // 1. Get Context from Repo Data (with knowledge-base + local folders)
+            const repoContext = await findRelevantContext(message);
+
+            // 2. Construct Prompt with RAG
+            const systemPrompt = `You are the AI assistant for the 'CTRL+S our souls' team. You are analyzing their SIGMOD 2025 Hash Join project. 
+            
+            The user is asking a question about the codebase.
+            
+            Here is the REAL context from their repository history found based on the user's query:
+            ---
+            ${repoContext}
+            ---
+
+            Use the code snippets/diffs above to explain HOW the team implemented the feature the user is asking about. 
+            If the context contains C++ code, explain the specific logic (e.g., "They used SIMD intrinsics like _mm512_load...").
+            If no relevant context is found (context string says so), give a general theoretical answer but explicitly mention you couldn't find the exact commit in the loaded data.
+            Be friendly, professional, and concise.`;
+            
+            try {
+                const fullPrompt = `${systemPrompt}\n\nUser Question: ${message}`;
+                const responseText = await callGemini(fullPrompt);
+                
+                document.getElementById(loadingId).remove();
+
+                const aiMsgHTML = `
+                    <div class="flex gap-3">
+                         <div class="w-8 h-8 rounded-full bg-indigo-100 flex-shrink-0 flex items-center justify-center text-indigo-600 text-sm border border-indigo-200">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-sm text-slate-700 prose prose-sm max-w-[85%]">
+                            ${marked.parse(responseText)}
+                        </div>
+                    </div>`;
+                messagesDiv.insertAdjacentHTML('beforeend', aiMsgHTML);
+                
+            } catch (error) {
+                document.getElementById(loadingId).remove();
+                const errorHTML = `
+                    <div class="flex gap-3">
+                         <div class="w-8 h-8 rounded-full bg-red-100 flex-shrink-0 flex items-center justify-center text-red-600 text-xs">!</div>
+                         <div class="bg-red-50 p-3 rounded-2xl rounded-tl-none border border-red-100 text-sm text-red-600">
+                             Oops! I couldn't reach the server. Please try again.
+                         </div>
+                    </div>`;
+                messagesDiv.insertAdjacentHTML('beforeend', errorHTML);
+            }
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function callGemini(promptText) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{
+                    parts: [{ text: promptText }]
+                }]
+            };
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                if (response.status === 429) {
+                    throw new Error('Rate limited (429). Please wait ~1 minute and try again.');
+                }
+                throw new Error(`API Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text;
+        }
+    </script>
 </body>
+</html>

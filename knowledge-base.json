@@ -1,0 +1,119 @@
+{
+  "projectInfo": {
+    "name": "CTRL+S our souls",
+    "competition": "SIGMOD 2025 Programming Contest",
+    "objective": "Optimize hash join execution time with parallel and cache-efficient techniques"
+  },
+  "optimizations": [
+    {
+      "id": "robinhood-hashing",
+      "number": 1,
+      "name": "Robin Hood Hashing",
+      "aliases": ["robinhood", "robin hood"],
+      "branchHint": null,
+      "keywords": ["robin", "hood", "probe", "distance"],
+      "fileHints": [],
+      "keyFiles": []
+    },
+    {
+      "id": "cuckoo-hashing",
+      "number": 2,
+      "name": "Cuckoo Hashing",
+      "aliases": ["cuckoo"],
+      "branchHint": null,
+      "keywords": ["cuckoo", "kick", "rehash"],
+      "fileHints": [],
+      "keyFiles": []
+    },
+    {
+      "id": "hopscotch-hashing",
+      "number": 3,
+      "name": "Hopscotch Hashing",
+      "aliases": ["hopscotch"],
+      "branchHint": null,
+      "keywords": ["hopscotch", "bitmap", "neighborhood"],
+      "fileHints": [],
+      "keyFiles": []
+    },
+    {
+      "id": "late-materialization",
+      "number": 4,
+      "name": "Late Materialization",
+      "aliases": ["late mat", "late materialisation", "materialize late"],
+      "branchHint": null,
+      "keywords": ["late", "materialization", "materialise", "defer", "projection", "string", "varchar"],
+      "fileHints": [],
+      "keyFiles": []
+    },
+    {
+      "id": "column-store",
+      "number": 5,
+      "name": "Column-Oriented Storage",
+      "aliases": ["column store", "columnar"],
+      "branchHint": null,
+      "keywords": ["column", "columnar", "page", "ref"],
+      "fileHints": [],
+      "keyFiles": []
+    },
+    {
+      "id": "no-root-ir",
+      "number": 6,
+      "name": "Eliminate Root Intermediate Relation",
+      "aliases": ["no root", "root ir", "root relation"],
+      "branchHint": null,
+      "keywords": ["root", "intermediate", "ir"],
+      "fileHints": [],
+      "keyFiles": []
+    },
+    {
+      "id": "unchained-table",
+      "number": 7,
+      "name": "Unchained Hash Table",
+      "aliases": ["unchained"],
+      "branchHint": null,
+      "keywords": ["unchained", "open addressing", "directory", "tuple storage"],
+      "fileHints": [],
+      "keyFiles": []
+    },
+    {
+      "id": "indexing",
+      "number": 8,
+      "name": "Indexing & Query Optimization",
+      "aliases": ["index", "indices", "query plan"],
+      "branchHint": null,
+      "keywords": ["index", "lookup", "join order"],
+      "fileHints": [],
+      "keyFiles": []
+    },
+    {
+      "id": "build-parallelization",
+      "number": 9,
+      "name": "Parallel Hash Table Building",
+      "aliases": ["build parallel", "parallel build"],
+      "branchHint": null,
+      "keywords": ["build", "parallel", "omp", "thread"],
+      "fileHints": [],
+      "keyFiles": []
+    },
+    {
+      "id": "probe-parallelization",
+      "number": 10,
+      "name": "Parallel Probing",
+      "aliases": ["probe parallel", "parallel probe"],
+      "branchHint": null,
+      "keywords": ["probe", "parallel", "numa", "thread"],
+      "fileHints": [],
+      "keyFiles": []
+    },
+    {
+      "id": "work-stealing",
+      "number": 11,
+      "name": "Work Stealing Scheduler",
+      "aliases": ["work stealing", "stealing"],
+      "branchHint": null,
+      "keywords": ["steal", "scheduler", "chunk", "thread"],
+      "fileHints": [],
+      "keyFiles": []
+    }
+  ]
+}
