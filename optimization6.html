@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimization 6: No Root Intermediate Results - CTRL+S our souls</title>
+    
+    <!-- Favicon (Database Icon) -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='12' cy='5' rx='9' ry='3'%3E%3C/ellipse%3E%3Cpath d='M21 12c0 1.66-4 3-9 3s-9-1.34-9-3'%3E%3C/path%3E%3Cpath d='M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5'%3E%3C/path%3E%3C/svg%3E">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom Scrollbar for Sidebar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Active Link Styling */
+        .nav-link.active {
+            color: #60a5fa; /* blue-400 */
+            border-left: 3px solid #60a5fa;
+            background-color: rgba(30, 41, 59, 0.5); /* slate-800/50 */
+            font-weight: 600;
+        }
+
+        /* Keyboard Key Style for Logo */
+        .kbd-key {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.15rem 0.4rem;
+            font-family: monospace;
+            font-weight: 700;
+            line-height: 1;
+            border-radius: 0.375rem;
+            border-bottom-width: 2px;
+            transition: all 0.1s;
+        }
+        
+        .kbd-light { background-color: #f8fafc; border-color: #cbd5e1; color: #334155; border-width: 1px 1px 3px 1px; }
+        .kbd-dark { background-color: #1e293b; border-color: #0f172a; color: #f1f5f9; border-width: 1px 1px 3px 1px; }
+
+        /* Inline code styling */
+        code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.875em;
+            color: #fca5a5; /* red-300 */
+            background-color: rgba(30, 41, 59, 0.5);
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-300">
+
+    <!-- Mobile Header -->
+    <div class="lg:hidden fixed top-0 left-0 w-full bg-slate-900/90 backdrop-blur-md border-b border-slate-800 text-white z-50 px-4 py-3 flex justify-between items-center shadow-md">
+        <div class="font-bold text-lg flex items-center gap-2">
+            <span class="kbd-key kbd-dark text-xs">CTRL</span>
+            <span class="text-slate-400 text-xs">+</span>
+            <span class="kbd-key kbd-dark text-xs">S</span>
+            <span class="ml-1 text-slate-200">our souls</span>
+        </div>
+        <button id="mobile-menu-btn" class="text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-slate-900 border-r border-slate-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40 overflow-y-auto custom-scrollbar pt-16 lg:pt-0 pb-10">
+        <div class="p-6 border-b border-slate-800 hidden lg:block">
+            <h1 class="text-xl font-bold text-white flex items-center flex-wrap gap-1">
+                <span class="kbd-key kbd-dark text-sm shadow-lg shadow-blue-900/20">CTRL</span>
+                <span class="text-slate-500 text-sm font-light">+</span>
+                <span class="kbd-key kbd-dark text-sm shadow-lg shadow-blue-900/20">S</span>
+                <span class="ml-1 text-slate-200">our souls</span>
+            </h1>
+            <p class="text-xs text-slate-500 mt-2 uppercase tracking-wide flex items-center gap-2">
+                <i class="fa-solid fa-database text-blue-500"></i> SIGMOD 2025
+            </p>
+        </div>
+
+        <nav class="p-4 space-y-1">
+            <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-2">Main</p>
+            <a href="index.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">Home</a>
+            <a href="task_description.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">Task Description</a>
+            
+            <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-6">Optimizations</p>
+            <div class="space-y-1">
+                <a href="optimization1.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">1. Robinhood HT</a>
+                <a href="optimization2.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">2. Cuckoo HT</a>
+                <a href="optimization3.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">3. Hopscotch HT</a>
+                <a href="optimization4.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">4. Late Materialization</a>
+                <a href="optimization5.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">5. Column Store</a>
+                <a href="#" class="nav-link active block px-3 py-2 text-sm text-white rounded-r-md hover:bg-slate-800 border-l-3 border-transparent transition-colors">6. No Root IR</a>
+                <a href="optimization7.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">7. Unchained Table</a>
+                <a href="optimization8.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">8. Indexing</a>
+                <a href="optimization9.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">9. Building Parallel.</a>
+                <a href="optimization10.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">10. Probing Parallel.</a>
+                <a href="optimization11.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">11. Work Stealing</a>
+            </div>
+
+            <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-6">Analysis</p>
+            <a href="index.html#results" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">Performance Results</a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content -->
+    <main class="lg:ml-64 min-h-screen flex flex-col relative overflow-hidden bg-slate-950">
+        
+        <!-- Ambient Background Effects -->
+        <div class="absolute inset-0 pointer-events-none z-0">
+            <div class="absolute top-0 left-0 right-0 h-[600px] bg-gradient-to-b from-slate-900 to-transparent"></div>
+            <!-- Rose/Pink blob top right for this optimization -->
+            <div class="absolute top-0 right-0 opacity-10 transform translate-x-1/3 -translate-y-1/3">
+                <svg width="800" height="800" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#fb7185" d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.6,-46.6C91.4,-34.1,98.1,-19.2,95.8,-5.1C93.5,9,82.2,22.3,71.6,33.9C61,45.5,51.1,55.4,39.8,63.4C28.5,71.4,15.8,77.5,2.1,73.9C-11.6,70.3,-26.3,57,-39.8,47.1C-53.3,37.2,-65.6,30.7,-73.6,20.3C-81.6,9.9,-85.3,-4.4,-81.2,-17.2C-77.1,-30,-65.2,-41.3,-53.4,-49.4C-41.6,-57.5,-29.9,-62.4,-17.9,-65.8C-5.9,-69.2,6.4,-71.1,19.3,-71.7L44.7,-76.4Z" transform="translate(100 100)" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="relative z-10 flex-grow px-8 lg:px-12 py-12 max-w-5xl mx-auto w-full">
+            
+            <!-- Header -->
+            <header class="mb-12 border-b border-slate-800 pb-8">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-400/20 text-rose-300 text-xs font-medium mb-4 backdrop-blur-sm">
+                    <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                    Optimization #6
+                </div>
+                <h1 class="text-4xl font-bold text-white mb-4">No Root Intermediate Results</h1>
+                <p class="text-slate-400 text-lg leading-relaxed">
+                    Eliminating the overhead of converting internal data structures by producing the final output format directly from the top-level join.
+                </p>
+            </header>
+
+            <div class="space-y-12">
+                
+                <!-- Overview -->
+                <section class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-ban text-slate-500 text-sm"></i>
+                            The Bottleneck
+                        </h2>
+                        <div class="prose prose-invert text-slate-300 text-sm leading-relaxed">
+                            <p class="mb-3">
+                                In previous iterations, our execution engine used internal structures (like <code>column_t</code> and <code>value_t</code>) optimized for processing speed.
+                            </p>
+                            <p class="mb-3">
+                                However, the <code>execute()</code> function is required to return a specific <code>ColumnarTable</code> format. This meant that after the final join (the root of the query plan), we were performing an expensive conversion step, copying data from our optimized internal format to the required output format.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-800/40 border border-slate-700/50 p-6 rounded-xl flex flex-col justify-center">
+                        <h3 class="font-bold text-rose-400 mb-2">The Solution</h3>
+                        <div class="flex items-center justify-between text-xs font-mono text-slate-400 mt-2 gap-2">
+                            <div class="text-center p-2 rounded bg-slate-900/50 border border-slate-700 w-1/3">
+                                Root Join
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <i class="fa-solid fa-xmark text-red-500 text-lg"></i>
+                                <span class="text-[10px]">No Copy</span>
+                            </div>
+                            <div class="text-center p-2 rounded bg-slate-900 border border-rose-500/30 w-1/3 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.1)]">
+                                Final Output
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-4 text-center">Writing directly to destination memory.</p>
+                    </div>
+                </section>
+
+                <!-- Implementation Section -->
+                <section>
+                    <h2 class="text-2xl font-bold text-white mb-6 pb-2 border-b border-slate-800">Direct Output Generation</h2>
+                    
+                    <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-800 mb-8">
+                        <p class="text-slate-300 leading-relaxed mb-4">
+                            To complete this optimization, the <strong>top-level join</strong> must be refactored to produce the <code>ColumnarTable</code> format directly.
+                        </p>
+                        <p class="text-slate-300 leading-relaxed">
+                            This requires distinct logic for the root node compared to internal nodes. Instead of outputting <code>column_t</code> pages, the root join writes results into the final <code>ColumnarTable</code> buffers mandated by the contest interface.
+                        </p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <!-- Left Col: Strategy -->
+                        <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                            <h3 class="text-xl font-bold text-rose-300 mb-3">Implementation Strategy</h3>
+                            <ul class="space-y-4 text-sm text-slate-300">
+                                <li class="flex gap-3">
+                                    <i class="fa-solid fa-check-circle text-rose-500 mt-1"></i>
+                                    <div>
+                                        <strong class="text-white block">Verify <code>value_t</code></strong>
+                                        <p>Ensure the lightweight value types from the previous optimization are stable before attempting this major structural change.</p>
+                                    </div>
+                                </li>
+                                <li class="flex gap-3">
+                                    <i class="fa-solid fa-check-circle text-rose-500 mt-1"></i>
+                                    <div>
+                                        <strong class="text-white block">Specialized Root Operator</strong>
+                                        <p>Create a specialized version of the join operator (or a flag-based branch) that handles memory allocation for the final result format.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Right Col: Impact -->
+                        <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
+                            <h3 class="text-xl font-bold text-rose-300 mb-3">The Outcome</h3>
+                            <p class="text-slate-400 text-sm mb-4">
+                                Once the root join produces a <code>ColumnarTable</code> directly:
+                            </p>
+                            <div class="bg-black/30 p-3 rounded border border-rose-500/20 text-center">
+                                <span class="text-rose-400 font-bold">No <code>std::variant</code> Required</span>
+                            </div>
+                            <p class="text-slate-400 text-sm mt-4">
+                                We eliminate the need for any variant data types in the output path, resulting in purely static, type-safe, and highly optimized code execution.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-slate-900 text-slate-400 py-12 mt-auto border-t border-slate-800 relative z-10">
+            <div class="max-w-6xl mx-auto px-8 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-center md:text-left">
+                    <h3 class="text-white font-bold text-lg flex items-center gap-2 justify-center md:justify-start">
+                        <span class="kbd-key kbd-dark text-xs border-slate-700">CTRL</span>
+                        <span class="text-slate-500 text-xs">+</span>
+                        <span class="kbd-key kbd-dark text-xs border-slate-700">S</span>
+                        <span class="ml-1 text-slate-300">our souls</span>
+                    </h3>
+                    <p class="text-sm mt-2 text-slate-500">SIGMOD 2025 Competition</p>
+                    <p class="text-xs mt-1 text-slate-600">Made by Dimitris Andreakis</p>
+                </div>
+                
+                <div>
+                     <a href="https://github.com/uoa-k23a/k23a-2025-d1-ctrl-s-our-souls" target="_blank" class="inline-flex items-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all font-medium shadow-lg shadow-blue-900/20 group">
+                        <i class="fa-brands fa-github text-xl group-hover:scale-110 transition-transform"></i>
+                        <span>Access Project Repository</span>
+                    </a>
+                    <p class="text-xs text-center mt-2 text-slate-600">(Private Access)</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        const btn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMenu() {
+            const isClosed = sidebar.classList.contains('-translate-x-full');
+            if (isClosed) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        btn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+    </script>
+</body>
+</html>

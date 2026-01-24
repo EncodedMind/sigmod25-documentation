@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimization 7: Unchained Hashtable - CTRL+S our souls</title>
+    
+    <!-- Favicon (Database Icon) -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cellipse cx='12' cy='5' rx='9' ry='3'%3E%3C/ellipse%3E%3Cpath d='M21 12c0 1.66-4 3-9 3s-9-1.34-9-3'%3E%3C/path%3E%3Cpath d='M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5'%3E%3C/path%3E%3C/svg%3E">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']],
+                processEscapes: true
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom Scrollbar for Sidebar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Active Link Styling */
+        .nav-link.active {
+            color: #60a5fa; /* blue-400 */
+            border-left: 3px solid #60a5fa;
+            background-color: rgba(30, 41, 59, 0.5); /* slate-800/50 */
+            font-weight: 600;
+        }
+
+        /* Keyboard Key Style for Logo */
+        .kbd-key {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.15rem 0.4rem;
+            font-family: monospace;
+            font-weight: 700;
+            line-height: 1;
+            border-radius: 0.375rem;
+            border-bottom-width: 2px;
+            transition: all 0.1s;
+        }
+        
+        .kbd-light { background-color: #f8fafc; border-color: #cbd5e1; color: #334155; border-width: 1px 1px 3px 1px; }
+        .kbd-dark { background-color: #1e293b; border-color: #0f172a; color: #f1f5f9; border-width: 1px 1px 3px 1px; }
+
+        /* Inline code styling */
+        code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.875em;
+            color: #fca5a5; /* red-300 */
+            background-color: rgba(30, 41, 59, 0.5);
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-300">
+
+    <!-- Mobile Header -->
+    <div class="lg:hidden fixed top-0 left-0 w-full bg-slate-900/90 backdrop-blur-md border-b border-slate-800 text-white z-50 px-4 py-3 flex justify-between items-center shadow-md">
+        <div class="font-bold text-lg flex items-center gap-2">
+            <span class="kbd-key kbd-dark text-xs">CTRL</span>
+            <span class="text-slate-400 text-xs">+</span>
+            <span class="kbd-key kbd-dark text-xs">S</span>
+            <span class="ml-1 text-slate-200">our souls</span>
+        </div>
+        <button id="mobile-menu-btn" class="text-white focus:outline-none">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-slate-900 border-r border-slate-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40 overflow-y-auto custom-scrollbar pt-16 lg:pt-0 pb-10">
+        <div class="p-6 border-b border-slate-800 hidden lg:block">
+            <h1 class="text-xl font-bold text-white flex items-center flex-wrap gap-1">
+                <span class="kbd-key kbd-dark text-sm shadow-lg shadow-blue-900/20">CTRL</span>
+                <span class="text-slate-500 text-sm font-light">+</span>
+                <span class="kbd-key kbd-dark text-sm shadow-lg shadow-blue-900/20">S</span>
+                <span class="ml-1 text-slate-200">our souls</span>
+            </h1>
+            <p class="text-xs text-slate-500 mt-2 uppercase tracking-wide flex items-center gap-2">
+                <i class="fa-solid fa-database text-blue-500"></i> SIGMOD 2025
+            </p>
+        </div>
+
+        <nav class="p-4 space-y-1">
+            <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-2">Main</p>
+            <a href="index.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">Home</a>
+            <a href="task_description.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">Task Description</a>
+            
+            <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-6">Optimizations</p>
+            <div class="space-y-1">
+                <a href="optimization1.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">1. Robinhood HT</a>
+                <a href="optimization2.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">2. Cuckoo HT</a>
+                <a href="optimization3.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">3. Hopscotch HT</a>
+                <a href="optimization4.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">4. Late Materialization</a>
+                <a href="optimization5.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">5. Column Store</a>
+                <a href="optimization6.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">6. No Root IR</a>
+                <a href="#" class="nav-link active block px-3 py-2 text-sm text-white rounded-r-md hover:bg-slate-800 border-l-3 border-transparent transition-colors">7. Unchained Table</a>
+                <a href="optimization8.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">8. Indexing</a>
+                <a href="optimization9.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">9. Building Parallel.</a>
+                <a href="optimization10.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">10. Probing Parallel.</a>
+                <a href="optimization11.html" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">11. Work Stealing</a>
+            </div>
+
+            <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 mt-6">Analysis</p>
+            <a href="index.html#results" class="nav-link block px-3 py-2 text-sm text-slate-400 rounded-r-md hover:bg-slate-800 hover:text-white border-l-3 border-transparent transition-colors">Performance Results</a>
+        </nav>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+    <!-- Main Content -->
+    <main class="lg:ml-64 min-h-screen flex flex-col relative overflow-hidden bg-slate-950">
+        
+        <!-- Ambient Background Effects -->
+        <div class="absolute inset-0 pointer-events-none z-0">
+            <div class="absolute top-0 left-0 right-0 h-[600px] bg-gradient-to-b from-slate-900 to-transparent"></div>
+            <!-- Cyan blob top right for Unchained theme -->
+            <div class="absolute top-0 right-0 opacity-10 transform translate-x-1/3 -translate-y-1/3">
+                <svg width="800" height="800" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#06b6d4" d="M44.7,-76.4C58.9,-69.2,71.8,-59.1,81.6,-46.6C91.4,-34.1,98.1,-19.2,95.8,-5.1C93.5,9,82.2,22.3,71.6,33.9C61,45.5,51.1,55.4,39.8,63.4C28.5,71.4,15.8,77.5,2.1,73.9C-11.6,70.3,-26.3,57,-39.8,47.1C-53.3,37.2,-65.6,30.7,-73.6,20.3C-81.6,9.9,-85.3,-4.4,-81.2,-17.2C-77.1,-30,-65.2,-41.3,-53.4,-49.4C-41.6,-57.5,-29.9,-62.4,-17.9,-65.8C-5.9,-69.2,6.4,-71.1,19.3,-71.7L44.7,-76.4Z" transform="translate(100 100)" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="relative z-10 flex-grow px-8 lg:px-12 py-12 max-w-5xl mx-auto w-full">
+            
+            <!-- Header -->
+            <header class="mb-12 border-b border-slate-800 pb-8">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-400/20 text-cyan-300 text-xs font-medium mb-4 backdrop-blur-sm">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                    Optimization #7
+                </div>
+                <h1 class="text-4xl font-bold text-white mb-4">Unchained Hashtable</h1>
+                <p class="text-slate-400 text-lg leading-relaxed">
+                    A hybrid design combining the best of open addressing and chaining to handle skewed data distributions efficiently.
+                </p>
+            </header>
+
+            <div class="space-y-12">
+                
+                <!-- Overview -->
+                <section class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-link-slash text-slate-500 text-sm"></i>
+                            The Need for Robustness
+                        </h2>
+                        <div class="prose prose-invert text-slate-300 text-sm leading-relaxed">
+                            <p class="mb-3">
+                                Hash join performance is critical for overall database system efficiency. However, predicting the nature of intermediate results is difficult.
+                            </p>
+                            <p class="mb-3">
+                                An ideal hash join implementation must be <strong>fast for typical queries</strong> and <strong>robust against unusual data distributions</strong> (e.g., highly skewed data or duplicates).
+                            </p>
+                            <p>
+                                The <strong>Unchained Hashtable</strong> combines build-side partitioning, adjacency array layout, pipelined probes, Bloom filters, and software write-combine buffers to achieve this balance.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-800/40 border border-slate-700/50 p-6 rounded-xl flex flex-col justify-center">
+                        <h3 class="font-bold text-cyan-400 mb-2">Key Features</h3>
+                        <ul class="space-y-2 text-slate-300 text-sm">
+                            <li class="flex gap-2">
+                                <i class="fa-solid fa-check text-cyan-500 mt-1"></i>
+                                <span><strong>Adjacency Array:</strong> Dense storage without linked list overhead.</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <i class="fa-solid fa-check text-cyan-500 mt-1"></i>
+                                <span><strong>Bloom Filters:</strong> Early rejection of non-matching probes.</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <i class="fa-solid fa-check text-cyan-500 mt-1"></i>
+                                <span><strong>Pipelined Probes:</strong> Maximizing CPU instruction throughput.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Architecture Section -->
+                <section>
+                    <h2 class="text-2xl font-bold text-white mb-6 pb-2 border-b border-slate-800">Unchained Architecture</h2>
+                    
+                    <div class="bg-slate-800/30 rounded-xl p-6 border border-slate-800 mb-8">
+                        <p class="text-slate-300 leading-relaxed mb-4">
+                            <strong>Open addressing</strong> is fast for non-selective predicates but struggles with duplicates and high selectivity. <strong>Chaining</strong> handles duplicates well but suffers from pointer chasing overhead.
+                        </p>
+                        <p class="text-slate-300 leading-relaxed">
+                            The <strong>Unchained Hashtable</strong> eliminates expensive pointer chasing by using a dense <strong>adjacency array</strong>. Tuples are stored in a contiguous buffer sorted by their hash prefixes. A separate directory points to the start of each prefix range.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800 mb-8 flex flex-col items-center">
+                        <img src="unchained_hashing.png" alt="Unchained Hashtable Layout" class="rounded-lg shadow-lg border border-slate-700 max-w-full h-auto">
+                        <p class="text-xs text-slate-500 mt-4 text-center max-w-2xl">
+                            Figure 1: Hashtable Layout. The directory entries point to ranges of tuples in a contiguous buffer. Each entry also contains a tiny Bloom filter for early pruning.
+                        </p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <!-- Left Col: Directory Structure -->
+                        <div class="bg-slate-800/40 p-6 rounded-xl border border-slate-700/50">
+                            <h3 class="text-xl font-bold text-cyan-300 mb-3">Directory & Bloom Filters</h3>
+                            <p class="text-slate-400 text-sm mb-4">
+                                Since joins are often highly selective, eliminating non-matching tuples early is crucial. We embed a <strong>register-sized Bloom filter</strong> (16 bits) directly into each directory slot.
+                            </p>
+                            <p class="text-slate-400 text-sm">
+                                <strong>Optimization:</strong> Modern systems use only the lower 48 bits for addressing. We utilize the unused <strong>upper 16 bits of pointers</strong> to store this Bloom filter.
+                            </p>
+                            <div class="mt-4 p-3 bg-black/40 rounded border border-cyan-500/20 text-xs font-mono text-cyan-400">
+                                [ 16-bit Filter | 48-bit Pointer ]
+                            </div>
+                        </div>
+
+                        <!-- Right Col: Probing Logic -->
+                        <div class="bg-slate-800/40 p-6 rounded-xl border border-slate-700/50">
+                            <h3 class="text-xl font-bold text-cyan-300 mb-3">Efficient Probing</h3>
+                            <p class="text-slate-400 text-sm mb-4">
+                                The probe phase is typically the most expensive part of a join. Our approach minimizes work per tuple:
+                            </p>
+                            <ol class="list-decimal pl-4 space-y-2 text-slate-300 text-sm">
+                                <li><strong>Hash:</strong> Compute hash of the probe key.</li>
+                                <li><strong>Directory Lookup:</strong> Use hash prefix to index into directory.</li>
+                                <li><strong>Filter Check:</strong> Check the 16-bit Bloom filter. If mismatch, discard tuple immediately (skip memory access).</li>
+                                <li><strong>Scan:</strong> If match, follow the pointer and scan the contiguous range of potential matches in the buffer.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Implementation Details -->
+                <section>
+                    <h2 class="text-2xl font-bold text-white mb-6 pb-2 border-b border-slate-800">Implementation Strategy</h2>
+                    <ul class="space-y-4 text-sm text-slate-300">
+                        <li class="flex gap-4">
+                            <div class="w-8 h-8 rounded bg-cyan-900/50 flex items-center justify-center font-bold text-sm text-cyan-400 shrink-0">
+                                <i class="fa-solid fa-code"></i>
+                            </div>
+                            <div>
+                                <strong class="text-white block mb-1">Hashing Functions</strong>
+                                <p>We experiment with <strong>CRC32</strong> and <strong>Fibonacci hashing</strong> to find the fastest distribution for our keys. The goal is to balance speed with collision minimization.</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="w-8 h-8 rounded bg-cyan-900/50 flex items-center justify-center font-bold text-sm text-cyan-400 shrink-0">
+                                <i class="fa-solid fa-microchip"></i>
+                            </div>
+                            <div>
+                                <strong class="text-white block mb-1">Precomputed Popcounts</strong>
+                                <p>For the Bloom filters, we can precompute <code>popcount</code> for all possible 16-bit hash prefixes to accelerate the filter construction phase.</p>
+                            </div>
+                        </li>
+                        <li class="flex gap-4">
+                            <div class="w-8 h-8 rounded bg-cyan-900/50 flex items-center justify-center font-bold text-sm text-cyan-400 shrink-0">
+                                <i class="fa-solid fa-box-archive"></i>
+                            </div>
+                            <div>
+                                <strong class="text-white block mb-1">Single Partition (Initial)</strong>
+                                <p>For this milestone, we construct a single partition during the build phase. Future optimizations will focus on parallelizing this construction.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-slate-900 text-slate-400 py-12 mt-auto border-t border-slate-800 relative z-10">
+            <div class="max-w-6xl mx-auto px-8 lg:px-12 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-center md:text-left">
+                    <h3 class="text-white font-bold text-lg flex items-center gap-2 justify-center md:justify-start">
+                        <span class="kbd-key kbd-dark text-xs border-slate-700">CTRL</span>
+                        <span class="text-slate-500 text-xs">+</span>
+                        <span class="kbd-key kbd-dark text-xs border-slate-700">S</span>
+                        <span class="ml-1 text-slate-300">our souls</span>
+                    </h3>
+                    <p class="text-sm mt-2 text-slate-500">SIGMOD 2025 Competition</p>
+                    <p class="text-xs mt-1 text-slate-600">Made by Dimitris Andreakis</p>
+                </div>
+                
+                <div>
+                     <a href="https://github.com/uoa-k23a/k23a-2025-d1-ctrl-s-our-souls" target="_blank" class="inline-flex items-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all font-medium shadow-lg shadow-blue-900/20 group">
+                        <i class="fa-brands fa-github text-xl group-hover:scale-110 transition-transform"></i>
+                        <span>Access Project Repository</span>
+                    </a>
+                    <p class="text-xs text-center mt-2 text-slate-600">(Private Access)</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        const btn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMenu() {
+            const isClosed = sidebar.classList.contains('-translate-x-full');
+            if (isClosed) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        btn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+    </script>
+</body>
+</html>
