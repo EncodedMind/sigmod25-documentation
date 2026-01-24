@@ -194,9 +194,9 @@
                         </h2>
                         
                         <p class="mb-4 text-slate-300 leading-relaxed">
-                            Given the joining pipeline and the pre-filtered input data, your task is to implement an efficient joining algorithm to accelerate the execution time of the joining pipeline.
-                            Specifically, You can check out our provided <a href="https://github.com/SIGMOD-25-Programming-Contest/base" target="_blank" class="text-blue-400 hover:text-blue-300 hover:underline">baseline solution</a>
-                            and need to implement the following function in <code>src/execute.cpp</code>
+                            Given the joining pipeline and the pre-filtered input data, the task was to implement an efficient joining algorithm to accelerate the execution time of the joining pipeline.
+                            Specifically, based on the provided <a href="https://github.com/sigmod25-teamOPT/project-base" target="_blank" class="text-blue-400 hover:text-blue-300 hover:underline">baseline solution</a>,
+                            we had to implement the following function in <code>src/execute.cpp</code>
                         </p>
                         
                         <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-lg font-mono text-sm mb-4 text-slate-300 shadow-lg">
@@ -204,7 +204,7 @@
                         </div>
                         
                         <p class="mb-4 text-slate-300">
-                            Optionally, you can implement these two functions as well to prepare any global context (e.g., thread pool) to accelerate the execution.
+                            Optionally, we could implement these two functions as well to prepare any global context (e.g., thread pool) to accelerate the execution.
                         </p>
                         
                         <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-lg font-mono text-sm mb-4 text-slate-300 shadow-lg">
@@ -335,21 +335,6 @@
                                 </div>
                             </div>
                         </div>
-                    </section>
-
-                    <!-- Requirements -->
-                    <section>
-                        <h2 class="text-2xl font-bold text-white mb-6 pb-2 border-b border-slate-800 flex items-center gap-3">
-                            <span class="w-2 h-8 bg-red-600 rounded-full"></span>
-                            Requirement
-                        </h2>
-                        <ul class="space-y-3 text-slate-300 list-disc pl-6">
-                            <li>You can only modify the file <code>src/execute.cpp</code> in the project or add new sources.</li>
-                            <li>You must not use any third-party libraries. If you are using libraries for development (e.g., for logging), ensure to remove them before the final submission.</li>
-                            <li>The joining pipeline (including order and build side) is optimized by PostgreSQL for <code>Hash Join</code> only. However, in the <code>execute</code> function, you are free to use other algorithms and change the pipeline, as long as the result is correct.</li>
-                            <li>For any struct listed above, all of their members are public. You can manipulate them in free functions as desired as long as the original files are not changed and the manipulated objects can be destructed properly.</li>
-                            <li>Your program will be evaluated on an unpublished benchmark sampled from the original JOB benchmark. You will not be able to access the test benchmark.</li>
-                        </ul>
                     </section>
 
                     <!-- Quick Start -->
