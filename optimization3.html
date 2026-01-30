@@ -73,6 +73,29 @@
             padding: 0.125rem 0.25rem;
             border-radius: 0.25rem;
             border: 1px solid rgba(255,255,255,0.1);
+            white-space: nowrap; /* Prevent breaking mid-code */
+        }
+        
+        /* Video Controls Styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            background: #6366f1;
+            cursor: pointer;
+            margin-top: -4px;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #475569;
+            border-radius: 2px;
         }
     </style>
 </head>
@@ -294,6 +317,33 @@
                     </div>
                 </section>
 
+                <!-- Visualization Video -->
+                <section class="bg-slate-800/30 border border-slate-700/50 p-6 rounded-xl">
+                    <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                        <i class="fa-solid fa-film text-orange-400"></i>
+                        Visualization
+                    </h3>
+                    <div class="relative rounded-lg overflow-hidden shadow-2xl border border-slate-700 bg-slate-900 group">
+                        <!-- Video Element -->
+                        <video id="hopscotchVideo" class="w-full h-auto" autoplay loop muted playsinline>
+                            <source src="hopscotch.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+
+                        <!-- Controls Overlay -->
+                        <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-4">
+                            <button id="playPauseBtn" class="text-white hover:text-orange-400 transition-colors focus:outline-none">
+                                <i class="fa-solid fa-pause text-xl"></i>
+                            </button>
+                            <input type="range" id="seekBar" class="flex-grow h-1 bg-slate-600 rounded-lg appearance-none cursor-pointer" value="0" min="0" max="100">
+                            <span id="timeDisplay" class="text-xs text-slate-300 font-mono w-12 text-right">00:00</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-3 text-center">
+                        Visualization of the Hopscotch hashing algorithm showing neighborhood management.
+                    </p>
+                </section>
+
             </div>
         </div>
 
@@ -340,6 +390,53 @@
 
         btn.addEventListener('click', toggleMenu);
         overlay.addEventListener('click', toggleMenu);
+
+        // Video Controls Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('hopscotchVideo');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const seekBar = document.getElementById('seekBar');
+            const timeDisplay = document.getElementById('timeDisplay');
+            const icon = playPauseBtn.querySelector('i');
+
+            // Format time helper
+            const formatTime = (seconds) => {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            };
+
+            // Play/Pause Toggle
+            playPauseBtn.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                    icon.classList.remove('fa-play');
+                    icon.classList.add('fa-pause');
+                } else {
+                    video.pause();
+                    icon.classList.remove('fa-pause');
+                    icon.classList.add('fa-play');
+                }
+            });
+
+            // Update seek bar as video plays
+            video.addEventListener('timeupdate', () => {
+                const value = (100 / video.duration) * video.currentTime;
+                seekBar.value = value;
+                timeDisplay.textContent = formatTime(video.currentTime);
+            });
+
+            // Seek functionality
+            seekBar.addEventListener('input', () => {
+                const time = (video.duration / 100) * seekBar.value;
+                video.currentTime = time;
+            });
+            
+            // Update duration once loaded
+            video.addEventListener('loadedmetadata', () => {
+                timeDisplay.textContent = formatTime(video.duration);
+            });
+        });
     </script>
 </body>
 </html>
