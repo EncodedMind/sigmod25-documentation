@@ -11,6 +11,9 @@ permissions:
 
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,7 +21,6 @@ jobs:
 
       - name: Inject API Key
         run: |
-          # Swap placeholder for the secret key
           sed -i 's/API_KEY_PLACEHOLDER/${{ secrets.GEMINI_API_KEY }}/g' index.html
 
       - name: Setup Pages
